@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<html lang="en">
+ <meta charset="utf-8">
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="./Content/ag-grid.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+<script src="./Scripts/ag-grid.js"></script>
+<script src="./Scripts/invoiceApprouter.js"></script>
+<script src="./Scripts/invoiceLedgerCtrl.js"></script>
+<script src="./Scripts/createInvoiceCtrl.js"></script>
+</head>
+<body ng-app="invoiceapp">
+<div class="container" >
+<div class="row" >
+  <div class="col-md-12 pull-right"><p class="bg-primary text-center">Invoice Application</p></div>
+  
+</div>
+
+<div class="row">
+
+
+  <div class="col-xs-1"></div>
+  <div class="col-xs-7"><a href="#">Home</a></div>
+  <div class="col-xs-4"><a href="#!createinvoice">Create Invoice</a></div>
+  
+</div>
+
+<div ng-view></div>
+
+</div>
+
+<script>
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

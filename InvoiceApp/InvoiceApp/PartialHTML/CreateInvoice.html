@@ -1,0 +1,80 @@
+<div  ng-controller="createinvoicectrl">
+
+<div class="panel panel-primary">
+  <div class="panel-heading">Create Invoice</div>
+  <div class="panel-body">
+
+
+<div class="row" >
+<div class="panel panel-default">
+  <div class="panel-heading">Invoice To</div>
+  <div class="panel-body">
+    <form>
+  <div class="form-group">
+    <label for="custname" >Customer Name</label>
+    <input class="form-control" ng-model="custName"  placeholder="customer name"></input>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Address</label>
+    <input class="form-control"  ng-model="custAddress" placeholder="address"></input>
+  </div>
+  </form>
+  </div>
+</div>
+</div>
+
+<div class="row" >
+<div class="panel panel-default">
+  <div class="panel-heading">Invoice From</div>
+  <div class="panel-body">
+    <form>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Company Name</label>
+    <input  class="form-control" ng-model="compName" placeholder="company name"></input>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Address</label>
+    <input  class="form-control" ng-model="compAddress" placeholder="company address"></input>
+  </div>
+  </form>
+  </div>
+</div>
+</div>
+
+<div class="row">
+<div class="col-xs-4">Paid <p class="text-info"> *Please check the checkbox if want to mark this invoice as Paid</p></div>
+<div class="col-xs-8"> <input type="checkbox" ng-model="invoicePaid"></input></div>
+</div>
+<div class="row" style="height:20px;">
+</div>
+<div class="row" >
+<div class="panel panel-default">
+  <div class="panel-heading">Add Item Details</div>
+  <div class="panel-body">
+    <form>
+  <div class="row">
+ <div class="col-xs-8" style="padding-right:3px;"><button type="button" class="btn btn-primary" ng-click="addItemToInvoice()">Add Item</button></div>
+  <div class="col-xs-4"></div>
+</div>
+
+<div class="row">
+<div class="col-xs-12" style="padding-right:1px;"><div ag-grid="gridOptions1" class="ag-blue" style="height:236px; width:100%;"></div></div>
+</div>
+
+<div class="row"> 
+<div class="col-xs-4"></div>
+<div class="col-xs-1"></div>
+<div class="col-xs-4"><b>Total cost</b></div>
+ <div class="col-xs-1" style="padding-right:1px;">{{totalcost}}</div>
+</div>
+  </form>
+  </div>
+</div>
+</div>
+      
+<div class="row">
+<div class="col-xs-11"></div>
+ <div class="col-xs-1" style="padding-right:1px;"><button type="button" class="btn btn-primary" ng-click="submitInvoice()">Submit</button></div>
+</div>
+</div>
+</div>

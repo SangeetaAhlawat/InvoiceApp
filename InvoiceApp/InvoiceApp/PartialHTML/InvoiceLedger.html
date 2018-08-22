@@ -1,0 +1,32 @@
+
+<div  ng-controller="invoiceledgerctrl">
+
+ <div class="row">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9">
+ <div class="alert alert-danger" role="alert" ng-show="msgdiv">{{msg}}</div>
+ </div>
+ <div class="col-xs-2"></div>
+</div>
+
+
+<div class="row">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9"><div ag-grid="gridOptions" class="ag-blue" style="height:336px;width: 100%;"></div></div>
+ <div class="col-xs-2"></div>
+</div>
+
+
+<div class="row" style="margin-top:5px;">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9"></div>
+ <div class="col-xs-2"></div>
+</div>
+
+<div class="row">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9"><button type="button" class="btn btn-primary  pull-right" ng-click="updatePaymentStatus()">Payment Received</button></div>
+ <div class="col-xs-2"></div>
+</div>
+
+</div>

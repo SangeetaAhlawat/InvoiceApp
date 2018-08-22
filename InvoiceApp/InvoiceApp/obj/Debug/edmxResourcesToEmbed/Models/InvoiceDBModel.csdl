@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="InvoiceDBModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="InvoiceDBEntities" p1:LazyLoadingEnabled="true">
+    <EntitySet Name="InvoiceDetails" EntityType="InvoiceDBModel.InvoiceDetail" />
+    <EntitySet Name="InvoiceItems" EntityType="InvoiceDBModel.InvoiceItem" />
+    <AssociationSet Name="FK_InvoiceItem_InvoiceDetails" Association="InvoiceDBModel.FK_InvoiceItem_InvoiceDetails">
+      <End Role="InvoiceDetails" EntitySet="InvoiceDetails" />
+      <End Role="InvoiceItem" EntitySet="InvoiceItems" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="InvoiceDetail">
+    <Key>
+      <PropertyRef Name="InvoiceID" />
+    </Key>
+    <Property Name="InvoiceID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+    <Property Name="CustomerName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+    <Property Name="Status" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="InvoiceItems" Relationship="InvoiceDBModel.FK_InvoiceItem_InvoiceDetails" FromRole="InvoiceDetails" ToRole="InvoiceItem" />
+  </EntityType>
+  <EntityType Name="InvoiceItem">
+    <Key>
+      <PropertyRef Name="ItemID" />
+    </Key>
+    <Property Name="ItemID" Type="Int32" Nullable="false" />
+    <Property Name="ItemDescription" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+    <Property Name="ItemQuantity" Type="Double" />
+    <Property Name="ItemRate" Type="Double" />
+    <Property Name="ItemCost" Type="Double" />
+    <Property Name="InvoiceID" Type="Int32" />
+    <NavigationProperty Name="InvoiceDetail" Relationship="InvoiceDBModel.FK_InvoiceItem_InvoiceDetails" FromRole="InvoiceItem" ToRole="InvoiceDetails" />
+  </EntityType>
+  <Association Name="FK_InvoiceItem_InvoiceDetails">
+    <End Role="InvoiceDetails" Type="InvoiceDBModel.InvoiceDetail" Multiplicity="0..1" />
+    <End Role="InvoiceItem" Type="InvoiceDBModel.InvoiceItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="InvoiceDetails">
+        <PropertyRef Name="InvoiceID" />
+      </Principal>
+      <Dependent Role="InvoiceItem">
+        <PropertyRef Name="InvoiceID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="InvoiceDBModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="InvoiceDBModelStoreContainer">
+    <EntitySet Name="InvoiceDetails" EntityType="InvoiceDBModel.Store.InvoiceDetails" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="InvoiceItem" EntityType="InvoiceDBModel.Store.InvoiceItem" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FK_InvoiceItem_InvoiceDetails" Association="InvoiceDBModel.Store.FK_InvoiceItem_InvoiceDetails">
+      <End Role="InvoiceDetails" EntitySet="InvoiceDetails" />
+      <End Role="InvoiceItem" EntitySet="InvoiceItem" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="InvoiceDetails">
+    <Key>
+      <PropertyRef Name="InvoiceID" />
+    </Key>
+    <Property Name="InvoiceID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="CustomerName" Type="nvarchar(max)" />
+    <Property Name="Status" Type="nvarchar" MaxLength="10" />
+  </EntityType>
+  <EntityType Name="InvoiceItem">
+    <Key>
+      <PropertyRef Name="ItemID" />
+    </Key>
+    <Property Name="ItemID" Type="int" Nullable="false" />
+    <Property Name="ItemDescription" Type="nvarchar(max)" />
+    <Property Name="ItemQuantity" Type="float" />
+    <Property Name="ItemRate" Type="float" />
+    <Property Name="ItemCost" Type="float" />
+    <Property Name="InvoiceID" Type="int" />
+  </EntityType>
+  <Association Name="FK_InvoiceItem_InvoiceDetails">
+    <End Role="InvoiceDetails" Type="InvoiceDBModel.Store.InvoiceDetails" Multiplicity="0..1" />
+    <End Role="InvoiceItem" Type="InvoiceDBModel.Store.InvoiceItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="InvoiceDetails">
+        <PropertyRef Name="InvoiceID" />
+      </Principal>
+      <Dependent Role="InvoiceItem">
+        <PropertyRef Name="InvoiceID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

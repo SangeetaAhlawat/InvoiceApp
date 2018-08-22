@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="InvoiceDBModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="InvoiceDBModelStoreContainer">
+          <EntitySet Name="InvoiceDetails" EntityType="InvoiceDBModel.Store.InvoiceDetails" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="InvoiceItem" EntityType="InvoiceDBModel.Store.InvoiceItem" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_InvoiceItem_InvoiceDetails" Association="InvoiceDBModel.Store.FK_InvoiceItem_InvoiceDetails">
+            <End Role="InvoiceDetails" EntitySet="InvoiceDetails" />
+            <End Role="InvoiceItem" EntitySet="InvoiceItem" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="InvoiceDetails">
+          <Key>
+            <PropertyRef Name="InvoiceID" />
+          </Key>
+          <Property Name="InvoiceID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerName" Type="nvarchar(max)" />
+          <Property Name="Status" Type="nvarchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="InvoiceItem">
+          <Key>
+            <PropertyRef Name="ItemID" />
+          </Key>
+          <Property Name="ItemID" Type="int" Nullable="false" />
+          <Property Name="ItemDescription" Type="nvarchar(max)" />
+          <Property Name="ItemQuantity" Type="float" />
+          <Property Name="ItemRate" Type="float" />
+          <Property Name="ItemCost" Type="float" />
+          <Property Name="InvoiceID" Type="int" />
+        </EntityType>
+        <Association Name="FK_InvoiceItem_InvoiceDetails">
+          <End Role="InvoiceDetails" Type="InvoiceDBModel.Store.InvoiceDetails" Multiplicity="0..1" />
+          <End Role="InvoiceItem" Type="InvoiceDBModel.Store.InvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InvoiceDetails">
+              <PropertyRef Name="InvoiceID" />
+            </Principal>
+            <Dependent Role="InvoiceItem">
+              <PropertyRef Name="InvoiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="InvoiceDBModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="InvoiceDBEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="InvoiceDetails" EntityType="InvoiceDBModel.InvoiceDetail" />
+          <EntitySet Name="InvoiceItems" EntityType="InvoiceDBModel.InvoiceItem" />
+          <AssociationSet Name="FK_InvoiceItem_InvoiceDetails" Association="InvoiceDBModel.FK_InvoiceItem_InvoiceDetails">
+            <End Role="InvoiceDetails" EntitySet="InvoiceDetails" />
+            <End Role="InvoiceItem" EntitySet="InvoiceItems" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="InvoiceDetail">
+          <Key>
+            <PropertyRef Name="InvoiceID" />
+          </Key>
+          <Property Name="InvoiceID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="Status" Type="String" MaxLength="10" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="InvoiceItems" Relationship="InvoiceDBModel.FK_InvoiceItem_InvoiceDetails" FromRole="InvoiceDetails" ToRole="InvoiceItem" />
+        </EntityType>
+        <EntityType Name="InvoiceItem">
+          <Key>
+            <PropertyRef Name="ItemID" />
+          </Key>
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="ItemDescription" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="ItemQuantity" Type="Double" />
+          <Property Name="ItemRate" Type="Double" />
+          <Property Name="ItemCost" Type="Double" />
+          <Property Name="InvoiceID" Type="Int32" />
+          <NavigationProperty Name="InvoiceDetail" Relationship="InvoiceDBModel.FK_InvoiceItem_InvoiceDetails" FromRole="InvoiceItem" ToRole="InvoiceDetails" />
+        </EntityType>
+        <Association Name="FK_InvoiceItem_InvoiceDetails">
+          <End Role="InvoiceDetails" Type="InvoiceDBModel.InvoiceDetail" Multiplicity="0..1" />
+          <End Role="InvoiceItem" Type="InvoiceDBModel.InvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InvoiceDetails">
+              <PropertyRef Name="InvoiceID" />
+            </Principal>
+            <Dependent Role="InvoiceItem">
+              <PropertyRef Name="InvoiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="InvoiceDBModelStoreContainer" CdmEntityContainer="InvoiceDBEntities">
+          <EntitySetMapping Name="InvoiceDetails">
+            <EntityTypeMapping TypeName="InvoiceDBModel.InvoiceDetail">
+              <MappingFragment StoreEntitySet="InvoiceDetails">
+                <ScalarProperty Name="InvoiceID" ColumnName="InvoiceID" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InvoiceItems">
+            <EntityTypeMapping TypeName="InvoiceDBModel.InvoiceItem">
+              <MappingFragment StoreEntitySet="InvoiceItem">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemDescription" ColumnName="ItemDescription" />
+                <ScalarProperty Name="ItemQuantity" ColumnName="ItemQuantity" />
+                <ScalarProperty Name="ItemRate" ColumnName="ItemRate" />
+                <ScalarProperty Name="ItemCost" ColumnName="ItemCost" />
+                <ScalarProperty Name="InvoiceID" ColumnName="InvoiceID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
