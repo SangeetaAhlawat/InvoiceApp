@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Transactions;
 using System.Web;
 
 namespace InvoiceApp.Models
@@ -28,7 +29,7 @@ namespace InvoiceApp.Models
             using (connection())
             {
                 SqlCommand com = new SqlCommand("GetInvoiceDetails", con);
-                com.CommandType = CommandType.StoredProcedure;                
+                com.CommandType = CommandType.StoredProcedure;
                 try
                 {
                     con.Open();
@@ -37,7 +38,7 @@ namespace InvoiceApp.Models
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex; //ToDo: Can log this error in log file instead of throw.
                 }
                 finally
                 {
@@ -53,42 +54,47 @@ namespace InvoiceApp.Models
         public bool SaveInvoice(InvoiceData model)
         {
             bool resultItems = false;
-            using (connection())
+
+            using (TransactionScope scope = new TransactionScope())
             {
-                SqlCommand com = new SqlCommand("InvoiceAndItemDetails", con);
-                com.CommandType = CommandType.StoredProcedure;
-                com.Parameters.AddWithValue("@custName", model.custName);
-                com.Parameters.AddWithValue("@custAddress", model.custAddress);
-                //Set the Paid status in DB based on paid checkbox value
-                if (model.invoicePaid == "1")
-                    com.Parameters.AddWithValue("@Status", "Paid");
-                else
-                    com.Parameters.AddWithValue("@Status", "UnPaid");
-                com.Parameters.AddWithValue("@compName", model.compName);
-                com.Parameters.AddWithValue("@compAddress", model.compAddress);
-                com.Parameters.AddWithValue("@totalcost", Convert.ToDouble(model.totalcost));
-                com.Parameters.AddWithValue("@invoicePaid", Convert.ToBoolean(model.invoicePaid));
-                com.Parameters.Add("@id", SqlDbType.Int).Direction = ParameterDirection.Output; 
-                
-                try
+                using (connection())
                 {
-                    con.Open();
-                    com.ExecuteNonQuery();
-                    int invoiceID = Convert.ToInt32(com.Parameters["@id"].Value.ToString());
-                    if (invoiceID != null)
+                    SqlCommand com = new SqlCommand("InvoiceAndItemDetails", con);
+                    com.CommandType = CommandType.StoredProcedure;
+                    com.Parameters.AddWithValue("@custName", model.custName);
+                    com.Parameters.AddWithValue("@custAddress", model.custAddress);
+                    //Set the Paid status in DB based on paid checkbox value
+                    if (model.invoicePaid == "True")
+                        com.Parameters.AddWithValue("@Status", "Paid");
+                    else
+                        com.Parameters.AddWithValue("@Status", "UnPaid");
+                    com.Parameters.AddWithValue("@compName", model.compName);
+                    com.Parameters.AddWithValue("@compAddress", model.compAddress);
+                    com.Parameters.AddWithValue("@totalcost", Convert.ToDouble(model.totalcost));
+                    com.Parameters.AddWithValue("@invoicePaid", Convert.ToBoolean(model.invoicePaid));
+                    com.Parameters.Add("@id", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                    try
                     {
-                        resultItems = SaveInvoiceItems(model.gridItems, invoiceID);
+                        con.Open();
+                        com.ExecuteNonQuery();
+                        int invoiceID = Convert.ToInt32(com.Parameters["@id"].Value.ToString());
+                        if (invoiceID != null)
+                        {
+                            resultItems = SaveInvoiceItems(model.gridItems, invoiceID);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex; //ToDo: Can log this error in log file instead of throw.
+                    }
+                    finally
+                    {
+                        con.Close();
+                        con.Dispose();
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-                finally
-                {
-                    con.Close();
-                    con.Dispose();
-                }
+                scope.Complete();
             }
             return resultItems;
         } 
@@ -119,7 +125,7 @@ namespace InvoiceApp.Models
                     }
                     catch (Exception ex)
                     {
-                        throw ex;
+                        throw ex; //ToDo: Can log this error in log file instead of throw.
                     }
                     finally
                     {
@@ -150,7 +156,7 @@ namespace InvoiceApp.Models
                 }
                 catch (Exception ex)
                 {
-                    throw ex;
+                    throw ex; //ToDo: Can log this error in log file instead of throw.
                 }
                 finally
                 {

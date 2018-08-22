@@ -50,19 +50,24 @@ app.controller("createinvoicectrl", function($scope,$http,$location, $httpParamS
 		$scope.gridOptions1.api.addItems([{item: "", des: "", qty: "",rate:"",cost:""}]);
 		
 	}
+
+
+	$scope.invoicePreview = function () {
+	    var tableList = [];
+	    $scope.gridOptions1.api.forEachNode(function (node) {
+	        tableList.push(node.data);
+	    });
+
+	    $scope.tableList = tableList;
+
+
+	    $('#previewmodal').modal();
+	}
+	
 	
 	$scope.submitInvoice=function(){
-		
-		
-		
-		//var itemList=$scope.gridOptions1.rowData;
-		
-	
-	 // $http.post('/Home/submitInvoice', JSON.stringify(dataObj)).
-	//	then(function(response) {
-	//		alert(response.data);
-	    //	});
-
+	    $scope.msgdiv = false;
+	    $scope.msgCustDiv = false;
 		var itemList = [];
 		$scope.gridOptions1.api.forEachNode(function (node) {
 		    itemList.push(node.data);
@@ -77,7 +82,55 @@ app.controller("createinvoicectrl", function($scope,$http,$location, $httpParamS
 		    invoicePaid: $scope.invoicePaid,
 		    gridItems: itemList
 		};
+        		
+		if ($scope.custName == "" || $scope.custName == null) {
+		    $scope.msgCust = "Please add Customer Name";
+		    $scope.msgCustDiv = true;
+		    return false;
+		}
+
+		if ($scope.custAddress == "" || $scope.custAddress == null) {
+		    $scope.msgCust = "Please add Customer Address";
+		    $scope.msgCustDiv = true;
+		    return false;
+		}
+
+		if ($scope.compName == "" || $scope.compName == null) {
+		    $scope.msgCust = "Please add Company Name";
+		    $scope.msgCustDiv = true;
+		    return false;
+		}
+
+		if ($scope.compAddress == "" || $scope.compAddress == null) {
+		    $scope.msgCust = "Please add Company Address";
+		    $scope.msgCustDiv = true;
+		    return false;
+		}
 		
+		var length = itemList.length;
+		if (length < 1) {
+		    $scope.msg = "Please add items in invoice";
+		    $scope.msgdiv = true;
+		    return false;
+		}
+		else {
+		    var isBreak = false;
+		    angular.forEach(itemList, function (item, key) {
+		        var qty = item.qty;
+		        var rate = item.rate;
+		        var des = item.des;
+		        if (qty == "" && des == "" && rate == "") {
+		            $scope.msg = "Please add items below in the grid";
+		            $scope.msgdiv = true;
+		            isBreak = true;
+		            return false;
+		        }
+		    });
+            
+		    if(isBreak == true)
+		        return false;
+		}
+
 
 		$http({
 		    method: 'POST',
@@ -86,11 +139,11 @@ app.controller("createinvoicectrl", function($scope,$http,$location, $httpParamS
 	        headers: { 'Content-Type': 'application/json' }
 
 	    })
-        .then(function (result) {
+        .then(function (result) {            
             alert(result.data);
             $location.url('/');
         }, function (result) {
-             // Error
+            alert("Error while saving data into DB");
         });
 
 		

@@ -24,15 +24,18 @@ namespace InvoiceApp.Controllers
             string JSONResult = string.Empty;
             if (ModelState.IsValid)
             {
-                InvoiceService invoiceSvc = new InvoiceService();
-                bool isSaved = invoiceSvc.SaveInvoice(model);
-                if (isSaved)
+                if (model.gridItems != null)
                 {
-                    string message = "Invoice has been created successfully!";
-                    return Json(message, JsonRequestBehavior.AllowGet);
+                    InvoiceService invoiceSvc = new InvoiceService();
+                    bool isSaved = invoiceSvc.SaveInvoice(model);
+                    if (isSaved)
+                    {
+                        string message = "Invoice has been created successfully!";
+                        return Json(message, JsonRequestBehavior.AllowGet);
+                    }
                 }
             }
-            return Json("", JsonRequestBehavior.AllowGet); 
+            return Json("Kindly add item details", JsonRequestBehavior.AllowGet); 
         }
 
         [HttpGet]

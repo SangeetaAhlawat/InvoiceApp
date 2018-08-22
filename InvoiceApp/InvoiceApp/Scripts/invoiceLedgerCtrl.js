@@ -21,7 +21,8 @@ app.controller("invoiceledgerctrl", function($scope,$http) {
         var invoicelist = "";
         $scope.msgdiv = false;
         $scope.paidItemSelected = false;
-        var length = $scope.gridOptions.api.getSelectedNodes().length;
+        
+        var length = $scope.gridOptions.api.getSelectedNodes().length;        
         if (length < 1) {
             $scope.msg = "Please select at least one unpaid invoice";
             $scope.msgdiv = true;
@@ -57,7 +58,7 @@ app.controller("invoiceledgerctrl", function($scope,$http) {
         .then(function (result) {
             getlatestInvoicelist();
         }, function (result) {
-            // Error
+            alert("Error while saving data into DB");
         });
 
     } // closing updatePaymentStatus
@@ -71,9 +72,15 @@ app.controller("invoiceledgerctrl", function($scope,$http) {
 
         }).then(function (result) {
             // alert(result.data);
-            $scope.gridOptions.api.setRowData(JSON.parse(result.data));
+            if ("" != result.data) {
+                $scope.rowCount = true;
+                $scope.gridOptions.api.setRowData(JSON.parse(result.data));
+            } else {
+                $scope.gridOptions.api.setRowData([]);
+                $scope.rowCount = false;
+            }
         }, function (result) {
-            // Error
+            alert("Error while fetching data from DB");
         });
     }
 

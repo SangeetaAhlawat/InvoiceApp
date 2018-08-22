@@ -4,12 +4,19 @@
   <div class="panel-heading">Create Invoice</div>
   <div class="panel-body">
 
+ <div class="row">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9">
+ <div class="alert alert-danger" role="alert" ng-show="msgCustDiv">{{msgCust}}</div>
+ </div>
+ <div class="col-xs-2"></div>
+</div>
 
 <div class="row" >
 <div class="panel panel-default">
   <div class="panel-heading">Invoice To</div>
   <div class="panel-body">
-    <form>
+    <form> 
   <div class="form-group">
     <label for="custname" >Customer Name</label>
     <input class="form-control" ng-model="custName"  placeholder="customer name"></input>
@@ -42,7 +49,7 @@
 </div>
 
 <div class="row">
-<div class="col-xs-4">Paid <p class="text-info"> *Please check the checkbox if want to mark this invoice as Paid</p></div>
+<div class="col-xs-4">Paid <h6> <small>Please check the checkbox if want to mark this invoice as Paid</small></h6></div>
 <div class="col-xs-8"> <input type="checkbox" ng-model="invoicePaid"></input></div>
 </div>
 <div class="row" style="height:20px;">
@@ -52,6 +59,15 @@
   <div class="panel-heading">Add Item Details</div>
   <div class="panel-body">
     <form>
+
+<div class="row">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9">
+ <div class="alert alert-danger" role="alert" ng-show="msgdiv">{{msg}}</div>
+ </div>
+ <div class="col-xs-2"></div>
+</div>
+
   <div class="row">
  <div class="col-xs-8" style="padding-right:3px;"><button type="button" class="btn btn-primary" ng-click="addItemToInvoice()">Add Item</button></div>
   <div class="col-xs-4"></div>
@@ -73,8 +89,103 @@
 </div>
       
 <div class="row">
-<div class="col-xs-11"></div>
+<div class="col-xs-10"></div>
+<div class="col-xs-1" style="padding-right:1px;"><button type="button" class="btn btn-primary" ng-click="invoicePreview()">Preview</button></div>
  <div class="col-xs-1" style="padding-right:1px;"><button type="button" class="btn btn-primary" ng-click="submitInvoice()">Submit</button></div>
 </div>
+
+<div class="row">
+<div class="col-xs-12">
+
+<div id="previewmodal" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+        <div class="panel panel-primary">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Invoice Details</div>
+  <div class="panel-body">
+
+
+<div class="row bg-primary">
+ <div class="col-xs-10"></div>
+  <div class="col-xs-2">Ref No:</div>
+</div>
+
+<div class="row" style="margin-top:10px;">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9"></div>
+ <div class="col-xs-2"></div>
+</div>
+
+<div class="row">
+ <div class="col-xs-6">To</div>
+ <div class="col-xs-6">From</div>
+</div>
+
+<div class="row">
+<div class="col-xs-1"></div>
+ <div class="col-xs-6">{{custName}}</div>
+ <div class="col-xs-5">{{compName}}</div>
+</div>
+
+<div class="row">
+<div class="col-xs-1"></div>
+ <div class="col-xs-6">{{custAddress}}</div>
+ <div class="col-xs-5">{{compAddress}}</div>
+</div>
+
+<div class="row" style="margin-top:10px;">
+ <div class="col-xs-1"></div>
+ <div class="col-xs-9"></div>
+ <div class="col-xs-2"></div>
+</div>
+
+
+<div class="row">
+<div class="col-xs-2">Item Details</div>
+ <div class="col-xs-10"></div>
+</div>
+
+
+<div class="row">
+<div class="col-xs-12">
+<table class="table table-hover">
+<tr class="active">
+<th class="active">Item Id</th><th class="active">Description</th><th class="active">Qty</th><th class="active">Rate</th><th class="active">Cost</th></tr>
+
+<tr ng-repeat="item in tableList ">
+    <td class="active">{{item.item}}</td>
+    <td class="active">{{item.des}}</td>
+    <td class="active">{{item.qty}}</td>
+    <td class="active">{{item.rate}}</td>
+    <td class="active">{{item.cost}}</td>
+ </tr>
+
+</table>
+</div>
+</div>
+
+<div class="row">
+<div class="col-xs-10"></div>
+ <div class="col-xs-2">Total cost:{{totalcost}}</div>
+</div>
+
+</div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        
+      </div> 
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
 </div>
 </div>
