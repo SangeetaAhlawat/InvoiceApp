@@ -4,14 +4,27 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Transactions;
 using System.Web;
+using Xero.Api.Core;
+using Xero.Api.Core.Model;
+using Xero.Api.Example.Applications.Private;
+using Xero.Api.Infrastructure.OAuth;
+using Xero.Api.Serialization;
+
 
 namespace InvoiceApp.Models
 {
     public class InvoiceService
     {
         private SqlConnection con;
+        private string consumerKey = System.Configuration.ConfigurationManager.AppSettings["consumerKey"];
+        private string consumerSecret = System.Configuration.ConfigurationManager.AppSettings["consumerSecret"];
+        private string privatePublicKey = System.Configuration.ConfigurationManager.AppSettings["privatePublicKey"];
+        private string privatePublicFile = System.Configuration.ConfigurationManager.AppSettings["privatePublicFile"];
 
         #region Get DB Connection
         private SqlConnection connection()
@@ -167,5 +180,124 @@ namespace InvoiceApp.Models
             return isUpdated;
         }
 	    #endregion
+
+        public bool CreateInvoice(InvoiceData model)
+        {
+            bool isSaved = false;
+            try
+            {
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                X509Certificate2 cert = new X509Certificate2(privatePublicFile, privatePublicKey);
+                var private_app_api = new XeroCoreApi("https://api.xero.com/api.xro/2.0/invoices", new PrivateAuthenticator(cert),
+                                         new Consumer(consumerKey, consumerSecret), null,
+                                         new DefaultMapper(), new DefaultMapper());
+
+                var inv = private_app_api.Invoices;
+
+                Contact newContact = new Contact();
+                newContact.Name = model.custName; // "Orac";
+
+                Invoice newInvoice = new Invoice();
+                newInvoice.Contact = new Contact();
+                newInvoice.Contact = newContact;
+                newInvoice.Date = System.DateTime.Now;
+                newInvoice.DueDate = System.DateTime.Now.AddMonths(1);
+                //if (model.invoicePaid == "True")
+                //    newInvoice.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Paid;
+                //else
+                //    newInvoice.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Draft;
+
+                newInvoice.Type = Xero.Api.Core.Model.Types.InvoiceType.AccountsReceivable;
+                newInvoice.LineAmountTypes = Xero.Api.Core.Model.Types.LineAmountType.Exclusive;
+                List<LineItem> lines = new List<LineItem>();
+                LineItem li = new LineItem();
+                foreach (var item in model.gridItems)
+                {
+                    li.Quantity = Convert.ToDecimal(item.qty);
+                    li.Description = item.des;
+                    li.AccountCode = "200";  //Need to analyse from Xero invoice for which this column is being used. Time being hard coded the value.
+                    li.UnitAmount = Convert.ToDecimal(item.rate);
+                    lines.Add(li);
+                }
+                newInvoice.LineItems = lines;
+
+                // call the API to create the Invoice
+                var result = inv.Create(newInvoice);
+                isSaved = true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return isSaved;            
+        }
+
+        public bool GetAndUpdateInvoice(string names)
+        {
+            bool isUpdated = false;
+            try
+            {
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                X509Certificate2 cert = new X509Certificate2(privatePublicFile, privatePublicKey);
+                var private_app_api = new XeroCoreApi("https://api.xero.com/api.xro/2.0/invoices", new PrivateAuthenticator(cert),
+                                         new Consumer(consumerKey, consumerSecret), null,
+                                         new DefaultMapper(), new DefaultMapper());
+
+                var pvtInv = private_app_api.Invoices;
+
+                if (names.Contains(','))
+                {
+                    string[] strNames = names.Split(',');
+                    foreach (string str in strNames)
+                    {
+                        IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Contact.Name == str).ToList();
+                        
+                        if (inv.Count() > 0)
+                        {
+                            foreach (Invoice item in inv)
+                            {
+                                item.AmountPaid = item.AmountDue;
+                                pvtInv.Update(item);
+                                isUpdated = true;
+                            }
+                        }
+                    }
+                }
+                else if (!string.IsNullOrEmpty(names))
+                {
+                    IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Contact.Name == names).ToList();
+                    if (inv.Count() > 0)
+                    {
+                        foreach (Invoice item in inv)
+                        {
+                            //var pItem = private_app_api.Payments;
+                            //Payment pm = new Payment();
+                            
+                            //Account ac = new Account();
+                            //ac.Code = "001";
+                            //Invoice iv = new Invoice();
+                            //iv.Id = item.Id;
+                            //pm.Account = ac;
+                            //pm.Invoice = iv;
+                            //pm.Amount = item.AmountDue;
+                            //pm.Date = System.DateTime.Now;
+                            //pm.Status = Xero.Api.Core.Model.Status.PaymentStatus.Authorised;
+                            //pItem.Create(pm);
+
+
+                            item.AmountPaid = item.AmountDue;
+                            pvtInv.Update(item);
+                            isUpdated = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                isUpdated = false;
+                throw ex;
+            }
+            return isUpdated;
+        }
     }
 }

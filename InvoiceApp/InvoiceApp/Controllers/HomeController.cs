@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Data;
 using Newtonsoft.Json;
 
+
 namespace InvoiceApp.Controllers
 {
     public class HomeController : Controller
@@ -27,11 +28,15 @@ namespace InvoiceApp.Controllers
                 if (model.gridItems != null)
                 {
                     InvoiceService invoiceSvc = new InvoiceService();
-                    bool isSaved = invoiceSvc.SaveInvoice(model);
-                    if (isSaved)
+                    bool isXeroSaved = invoiceSvc.CreateInvoice(model);
+                    if (isXeroSaved)
                     {
-                        string message = "Invoice has been created successfully!";
-                        return Json(message, JsonRequestBehavior.AllowGet);
+                        //bool isSaved = invoiceSvc.SaveInvoice(model);
+                        //if (isSaved)
+                        //{
+                        //    string message = "Invoice has been created successfully!";
+                        //    return Json(message, JsonRequestBehavior.AllowGet);
+                        //}
                     }
                 }
             }
@@ -43,8 +48,7 @@ namespace InvoiceApp.Controllers
         {
             string JSONResult = string.Empty;
             InvoiceService invoiceSvc = new InvoiceService();
-            DataTable dt = invoiceSvc.GetInvoiceList();
-
+            DataTable dt = invoiceSvc.GetInvoiceList();  
             if (dt.Rows.Count > 0)
             {
                 JSONResult = JsonConvert.SerializeObject(dt);
@@ -58,11 +62,15 @@ namespace InvoiceApp.Controllers
             if (ModelState.IsValid)
             {                 
                 InvoiceService invoiceSvc = new InvoiceService();
-                bool isSaved = invoiceSvc.UpdateInvoice(model.invoiceIdList);
-                if (isSaved)
+                bool isUpdated = invoiceSvc.GetAndUpdateInvoice(model.invoiceNameList);
+                if (isUpdated)
                 {
-                    string message = "Invoice has been created successfully!";
-                    return Json(message, JsonRequestBehavior.AllowGet);
+                    bool isSaved = invoiceSvc.UpdateInvoice(model.invoiceIdList);
+                    if (isSaved)
+                    {
+                        string message = "Invoice has been created successfully!";
+                        return Json(message, JsonRequestBehavior.AllowGet);
+                    }
                 }
             }
             return Json("", JsonRequestBehavior.AllowGet); 

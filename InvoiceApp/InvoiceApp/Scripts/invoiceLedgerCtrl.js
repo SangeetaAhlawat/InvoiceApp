@@ -19,6 +19,7 @@ app.controller("invoiceledgerctrl", function($scope,$http) {
 
     $scope.updatePaymentStatus = function () {
         var invoicelist = "";
+        var invoiceCustNames = "";
         $scope.msgdiv = false;
         $scope.paidItemSelected = false;
         
@@ -35,8 +36,10 @@ app.controller("invoiceledgerctrl", function($scope,$http) {
                 $scope.paidItemSelected = true;
             }
             invoicelist = invoicelist + item.data.InvoiceId + ",";
+            invoiceCustNames = invoiceCustNames + item.data.CustomerName + ",";
         });
         invoicelist = invoicelist.substring(0, invoicelist.length - 1);
+        invoiceCustNames = invoiceCustNames.substring(0, invoiceCustNames.length - 1);
         //alert(invoicelist);
         if (true == $scope.paidItemSelected) {
             $scope.msgdiv = true;
@@ -45,7 +48,8 @@ app.controller("invoiceledgerctrl", function($scope,$http) {
          }
 
         var mdILObj = {
-            invoiceIdList: invoicelist
+            invoiceIdList: invoicelist,
+            invoiceNameList: invoiceCustNames
         };
 
         $http({

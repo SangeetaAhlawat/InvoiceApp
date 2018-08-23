@@ -14,5 +14,6 @@ namespace InvoiceApp.Models
         public List<GridItems> gridItems {get; set;}
 
         public string invoiceIdList { get; set; }
+        public string invoiceNameList { get; set; }
     }
 }

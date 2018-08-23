@@ -25,4 +25,13 @@ C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\System.Web.WebPages.Deployment
 C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\System.Web.WebPages.Razor.xml
 C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\obj\Debug\InvoiceApp.dll
 C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\obj\Debug\InvoiceApp.pdb
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\Xero.Api.dll
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\Xero.Api.Example.Applications.dll
 C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\obj\Debug\InvoiceApp.csprojResolveAssemblyReference.cache
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\EntityFramework.SqlServer.dll
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\System.Data.SQLite.dll
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\System.Data.SQLite.EF6.dll
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\System.Data.SQLite.Linq.dll
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\Xero.Api.Example.TokenStores.dll
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\EntityFramework.SqlServer.xml
+C:\SangeetaWorkProjects\InvoiceApp\InvoiceApp\bin\System.Data.SQLite.xml
