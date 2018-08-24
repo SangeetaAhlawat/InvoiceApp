@@ -31,12 +31,12 @@ namespace InvoiceApp.Controllers
                     bool isXeroSaved = invoiceSvc.CreateInvoice(model);
                     if (isXeroSaved)
                     {
-                        //bool isSaved = invoiceSvc.SaveInvoice(model);
-                        //if (isSaved)
-                        //{
-                        //    string message = "Invoice has been created successfully!";
-                        //    return Json(message, JsonRequestBehavior.AllowGet);
-                        //}
+                        bool isSaved = invoiceSvc.SaveInvoice(model);
+                        if (isSaved)
+                        {
+                            string message = "Invoice has been created successfully!";
+                            return Json(message, JsonRequestBehavior.AllowGet);
+                        }
                     }
                 }
             }
