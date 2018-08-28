@@ -48,10 +48,19 @@ namespace InvoiceApp.Controllers
         {
             string JSONResult = string.Empty;
             InvoiceService invoiceSvc = new InvoiceService();
-            DataTable dt = invoiceSvc.GetInvoiceList();  
-            if (dt.Rows.Count > 0)
+            //DataTable dt = invoiceSvc.GetInvoiceList();   // List from DB
+            //if (dt.Rows.Count > 0)   // From DB 
+            DataTable dtXero = invoiceSvc.GetInvoiceListFromXero();
+            foreach (DataRow dr in dtXero.Rows)
             {
-                JSONResult = JsonConvert.SerializeObject(dt);
+                if (dr["Status"].ToString() == "Draft")
+                {
+                    dr["Status"] = "UnPaid";
+                }
+            }
+            if (dtXero.Rows.Count > 0)  // From Xero
+            {
+                JSONResult = JsonConvert.SerializeObject(dtXero);
             }
             return Json(JSONResult, JsonRequestBehavior.AllowGet);
         }
@@ -62,10 +71,10 @@ namespace InvoiceApp.Controllers
             if (ModelState.IsValid)
             {                 
                 InvoiceService invoiceSvc = new InvoiceService();
-                bool isUpdated = invoiceSvc.GetAndUpdateInvoice(model.invoiceNameList);
+                bool isUpdated = invoiceSvc.GetAndUpdateInvoice(model.invoiceIdList);    //(model.invoiceNameList);
                 if (isUpdated)
                 {
-                    bool isSaved = invoiceSvc.UpdateInvoice(model.invoiceIdList);
+                    bool isSaved = invoiceSvc.UpdateInvoice(model.invoiceNameList);    //(model.invoiceIdList);
                     if (isSaved)
                     {
                         string message = "Invoice has been created successfully!";

@@ -60,7 +60,7 @@ namespace InvoiceApp.Models
                 }
             }
             return dt;
-        } 
+        }        
         #endregion
         
         #region Save/Insert Invoice Details in DB
@@ -181,6 +181,7 @@ namespace InvoiceApp.Models
         }
 	    #endregion
 
+        #region Xero Methods
         public bool CreateInvoice(InvoiceData model)
         {
             bool isSaved = false;
@@ -195,18 +196,14 @@ namespace InvoiceApp.Models
                 var inv = private_app_api.Invoices;
 
                 Contact newContact = new Contact();
-                newContact.Name = model.custName; // "Orac";
+                newContact.Name = model.custName; 
 
                 Invoice newInvoice = new Invoice();
                 newInvoice.Contact = new Contact();
                 newInvoice.Contact = newContact;
                 newInvoice.Date = System.DateTime.Now;
+                newInvoice.Reference = "TestDemoNZ";
                 newInvoice.DueDate = System.DateTime.Now.AddMonths(1);
-                //if (model.invoicePaid == "True")
-                //    newInvoice.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Paid;
-                //else
-                //    newInvoice.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Draft;
-
                 newInvoice.Type = Xero.Api.Core.Model.Types.InvoiceType.AccountsReceivable;
                 newInvoice.LineAmountTypes = Xero.Api.Core.Model.Types.LineAmountType.Exclusive;
                 List<LineItem> lines = new List<LineItem>();
@@ -221,17 +218,59 @@ namespace InvoiceApp.Models
                 }
                 newInvoice.LineItems = lines;
 
-                // call the API to create the Invoice
-                var result = inv.Create(newInvoice);
-                isSaved = true;
+                if (model.invoicePaid == "True")
+                {
+                    var result = inv.Create(newInvoice);
+                    IEnumerable<Invoice> invF = inv.Find().Where(invt => invt.Contact.Name == model.custName).ToList();
+                    if (invF.Count() > 0)
+                    {
+                        foreach (Invoice item in invF)
+                        {
+                            item.AmountPaid = item.AmountDue;
+                            item.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Authorised;
+                            inv.Update(item);
+
+
+                            var pItem = private_app_api.Payments;
+                            Payment pm = new Payment();
+
+                            Account ac = new Account();
+                            ac.Code = "091";
+                            Invoice iv = new Invoice();
+                            iv.Id = item.Id;
+                            pm.Account = ac;
+                            pm.Invoice = iv;
+                            pm.Amount = item.AmountDue;
+                            pm.Date = System.DateTime.Now;
+                            pm.Status = Xero.Api.Core.Model.Status.PaymentStatus.Authorised;
+                            pItem.Create(pm);
+
+                            isSaved = true;
+                        }
+                    }
+                }
+                else
+                {
+                    // call the API to create the Invoice
+                    var result = inv.Create(newInvoice);
+                    isSaved = true;
+                }                    
+
+                // To Create Contact if required
+                //var cItem = private_app_api.Contacts;
+                //IEnumerable<Contact> invC = cItem.Find().Where(invtc => invtc.Name == "Sangi NZ").ToList();
+                //if (invC.Count() == 0)
+                //{
+                //    var contacts = CreateContacts("Sangi", "NZ").ToList();
+                //    cItem.Create(contacts);
+                //}  
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            return isSaved;            
+            return isSaved;
         }
-
         public bool GetAndUpdateInvoice(string names)
         {
             bool isUpdated = false;
@@ -250,14 +289,31 @@ namespace InvoiceApp.Models
                     string[] strNames = names.Split(',');
                     foreach (string str in strNames)
                     {
-                        IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Contact.Name == str).ToList();
-                        
+                        //IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Contact.Name == str).ToList();
+                        IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Number == str).ToList();
+
                         if (inv.Count() > 0)
                         {
                             foreach (Invoice item in inv)
                             {
                                 item.AmountPaid = item.AmountDue;
+                                item.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Authorised;
                                 pvtInv.Update(item);
+
+                                var pItem = private_app_api.Payments;
+                                Payment pm = new Payment();
+
+                                Account ac = new Account();
+                                ac.Code = "091";
+                                Invoice iv = new Invoice();
+                                iv.Id = item.Id;
+                                pm.Account = ac;
+                                pm.Invoice = iv;
+                                pm.Amount = item.AmountDue;
+                                pm.Date = System.DateTime.Now;
+                                pm.Status = Xero.Api.Core.Model.Status.PaymentStatus.Authorised;
+                                pItem.Create(pm);
+
                                 isUpdated = true;
                             }
                         }
@@ -265,28 +321,32 @@ namespace InvoiceApp.Models
                 }
                 else if (!string.IsNullOrEmpty(names))
                 {
-                    IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Contact.Name == names).ToList();
+                    //IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Contact.Name == names).ToList();
+                    IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Number == names).ToList();
                     if (inv.Count() > 0)
                     {
                         foreach (Invoice item in inv)
                         {
-                            //var pItem = private_app_api.Payments;
-                            //Payment pm = new Payment();
-                            
-                            //Account ac = new Account();
-                            //ac.Code = "001";
-                            //Invoice iv = new Invoice();
-                            //iv.Id = item.Id;
-                            //pm.Account = ac;
-                            //pm.Invoice = iv;
-                            //pm.Amount = item.AmountDue;
-                            //pm.Date = System.DateTime.Now;
-                            //pm.Status = Xero.Api.Core.Model.Status.PaymentStatus.Authorised;
-                            //pItem.Create(pm);
-
-
                             item.AmountPaid = item.AmountDue;
+                            item.Status = Xero.Api.Core.Model.Status.InvoiceStatus.Authorised;
                             pvtInv.Update(item);
+
+
+                            var pItem = private_app_api.Payments;
+                            Payment pm = new Payment();
+
+                            Account ac = new Account();
+                            ac.Code = "091";
+                            Invoice iv = new Invoice();
+                            iv.Id = item.Id;
+                            pm.Account = ac;
+                            pm.Invoice = iv;
+                            pm.Amount = item.AmountDue;
+                            pm.Date = System.DateTime.Now;
+                            pm.Status = Xero.Api.Core.Model.Status.PaymentStatus.Authorised;
+                            pItem.Create(pm);
+
+
                             isUpdated = true;
                         }
                     }
@@ -299,5 +359,82 @@ namespace InvoiceApp.Models
             }
             return isUpdated;
         }
+        private IEnumerable<Contact> CreateContacts(string fName, string lName)
+        {
+            var contacts = new List<Contact>();
+
+            contacts.Add(new Contact
+            {
+                FirstName = fName,
+                LastName = lName,
+                Name = string.Format("{0} {1}", fName, lName)          
+            });
+
+            return contacts;
+        }
+        public DataTable GetInvoiceListFromXero()
+        {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            X509Certificate2 cert = new X509Certificate2(privatePublicFile, privatePublicKey);
+            var private_app_api = new XeroCoreApi("https://api.xero.com/api.xro/2.0/invoices", new PrivateAuthenticator(cert),
+                                     new Consumer(consumerKey, consumerSecret), null,
+                                     new DefaultMapper(), new DefaultMapper());
+
+            var pvtInv = private_app_api.Invoices;
+
+            DataTable dt = new DataTable();
+            IEnumerable<Invoice> inv = pvtInv.Find().Where(invt => invt.Reference == "TestDemoNZ").ToList();
+            dt = ToDataTable(inv.ToList());
+            return dt;
+        }
+
+        public DataTable ToDataTable<T>(List<T> items)
+        {
+            var tb = new DataTable(typeof(T).Name);
+
+            PropertyInfo[] props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var prop in props)
+            {
+                if (prop.Name == "Number")
+                {
+                    tb.Columns.Add("InvoiceId");
+                }
+                if (prop.Name == "Contact")
+                {
+                    tb.Columns.Add("CustomerName");
+                }
+                if (prop.Name == "Status")
+                {
+                    tb.Columns.Add("Status");
+                }
+            }
+
+            foreach (var item in items)
+            {
+                var values = new object[3];
+                for (var i = 0; i < 3; i++)
+                {
+                    if (i == 0)
+                    {
+                        values[i] = props[1].GetValue(item);
+                    }
+                    else if (i == 1)
+                    {
+                        values[i] = ((Xero.Api.Core.Model.Contact)(props[2].GetValue(item, null))).Name;
+                    }
+                    else if (i == 2)
+                    {
+                        values[i] = props[4].GetValue(item);
+                    }
+                }
+
+                tb.Rows.Add(values);
+            }
+
+            return tb;
+        }
+
+        #endregion
     }
 }
